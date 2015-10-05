@@ -5,13 +5,8 @@ class excel:
     def getSprintDetails(self):
         wb = openpyxl.load_workbook('Defect.xlsx')
         sheetnames = wb.get_sheet_names() # to get sheet names in the excel
-        #print(sheetnames)
-
         sheet = wb.get_sheet_by_name(sheetnames[1])
-        #print(sheet.title)
-
-        last_row = sheet.max_row
-        #print(last_row)
+        last_row = sheet.max_row #last row in the sheet
         sprintname =[]
         sprintstartdate= []
         sprintenddate=[]
@@ -23,16 +18,6 @@ class excel:
 
         for i in range(len(sprintname)):
             sprintdetail.append([sprintname[i],sprintstartdate[i],sprintenddate[i]])
-            pass
-
-        #print(sprintdetail)
-        #
-        # sprintstartdate.sort()
-        # sprintenddate.sort()
-        # for i in range(len(sprintstartdate)):
-        #     print('SPRINT NAME '+ str(sprintname[i]))
-        #     print ('START DATE '+ str(sprintstartdate[i]))
-        #     print ('END DATE '+ str(sprintenddate[i]))
         return (sprintdetail)
 
     def getDefectDetails(self):
@@ -43,82 +28,78 @@ class excel:
         print(last_row)
         defect_date = []
         defect_priority = []
+        defect_deatil = []
         for i in range(2,last_row+1):
             defect_date.append(sheet.cell(row=i, column=2).value)
             defect_priority.append(sheet.cell(row=i,column=3).value)
-        #print(defect_date)
-        # for figuring out defects in each month
-
-        jan,feb,mar,apr,may,june,july,aug,sep,oct,nov,dec = 0,0,0,0,0,0,0,0,0,0,0,0
-        #month_index = []
         for i in range(len(defect_date)):
-            for month_range in range(1,13,1):
-                if(defect_date[i].month == month_range):
-                    if (month_range == 1):
-                        jan +=1
-                    elif (month_range ==2):
-                        feb +=1
-                    elif (month_range ==3):
-                        mar +=1
-                    elif (month_range ==4):
-                        apr +=1
-                    elif (month_range ==5):
-                        may +=1
-                    elif (month_range ==6):
-                        june +=1
-                    elif (month_range ==7):
-                        july +=1
-                    elif (month_range ==8):
-                        aug +=1
-                    elif (month_range ==9):
-                        sep +=1
-                    elif (month_range ==10):
-                        oct +=1
-                    elif (month_range ==11):
-                        nov +=1
-                    elif (month_range ==12):
-                        dec +=1
-
-        print(jan,feb,mar,apr,may,june,july,aug,sep,oct,nov,dec)
-
-        #for defects based on priority
-        p1,p2,p3 = 0,0,0
-        for i in range(len(defect_priority)):
-            for priority_range in range(1,4,1):
-                if(defect_priority[i] == priority_range):
-                    if (priority_range ==1):
-                        p1 +=1
-                    elif (priority_range ==2):
-                        p2 +=1
-                    elif (priority_range ==3):
-                        p3 +=1
-        print(p1,p2,p3)
+            defect_deatil.append([defect_date[i],defect_priority[i]])
+            pass
+        return (defect_deatil)
 
     def getDefectInSprint(self):
         sprintdetails = excel.getSprintDetails(self)
-        #print(len(sprintdetails))
-        #print(sprintdetails)
-
+        defectdetails = excel.getDefectDetails(self)
 
         wb = openpyxl.load_workbook('Defect.xlsx')
         sheetnames = wb.get_sheet_names() # to get sheet names in the excel
         sheet = wb.get_sheet_by_name(sheetnames[0])
         last_row = sheet.max_row
         print(last_row)
-        defect_date = []
 
-        for i in range(2,last_row+1,1):
-            defect_date.append(sheet.cell(row=i, column=2).value)
-
-        print(len(defect_date))
-        for i in range(len(defect_date)):
-            #print('This is defect date '+str(defect_date[i]))
+        print(len(defectdetails))
+        for i in range(len(defectdetails)):
             for j in range(len(sprintdetails)):
-                if(defect_date[i]>= sprintdetails[j][1] and defect_date[i]<=sprintdetails[j][2]):
-                 #if (sprintdetails[j][1] >= defect_date[i] <= sprintdetails[j][2]):
-                     print(sprintdetails[j][0])
-            #print('----------------------------------------------')
-        pass
+                if(defectdetails[i][0]>= sprintdetails[j][1] and defectdetails[i][0]<=sprintdetails[j][2]):
+                     #print(sprintdetails[j][0])
+                     value = [sprintdetails[j][0]]
+                     #print(value)
+                     defectdetails[i].extend(value)
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July','August', 'September', 'October', 'November', 'December']
+        monthly_defect = []
+        month_year_name = []
+        defect_count_month = []
+        for i in range(len(defectdetails)):
+            for year in range(2015,2017,1):
+                for month_val in range(1,13,1):
+                    if defectdetails[i][0].month == month_val and defectdetails[i][0].year == year:
+                        month_year_val = [str((str(months[month_val-1]) + ' '+str(year)))]
+                        defectdetails[i].extend(month_year_val)
+                        pass
+        excel.writeinsheet(self,defectdetails)
+        for i in range(len(defectdetails)):
+            #print(defectdetails[i])
+            pass
+        print('----------------------------------------------------------------------------------------------')
+
+        for year in range(2015,2017,1):
+            for month_val in range(1,13,1):
+                value_to_search = str((str(months[month_val-1]) + ' '+str(year)))
+                count =0
+                for i in range(len(defectdetails)):
+                    if value_to_search in defectdetails[i]:
+                        count +=1
+                if count>0:
+                    month_year_name.append(value_to_search)
+                    defect_count_month.append(count)
+            pass
+
+        for i in range(len(month_year_name)):
+            monthly_defect.append([month_year_name[i],defect_count_month[i]])
+
+        for i in range(len(monthly_defect)):
+            print(monthly_defect[i])
+
+    def writeinsheet(self,anylist):
+        anylist = anylist
+        wb = openpyxl.load_workbook('Defect.xlsx')
+        sheetnames = wb.get_sheet_names() # to get sheet names in the excel
+        sheet = wb.get_sheet_by_name(sheetnames[2])
+
+        for rows in range(len(anylist)):
+            for columns in range(len(anylist[rows])):
+                sheet.cell(row=rows+1,column=columns+1, value=str(anylist[rows][columns]))
+        wb.save('Defect.xlsx')
 
 
 if __name__ == '__main__':
