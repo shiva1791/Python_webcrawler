@@ -47,6 +47,7 @@ class excel:
         last_row = sheet.max_row
         print(last_row)
 
+        #add month and year column in defect list
         print(len(defectdetails))
         for i in range(len(defectdetails)):
             for j in range(len(sprintdetails)):
@@ -70,11 +71,13 @@ class excel:
                         defectdetails[i].extend(month_year_val)
                         pass
         excel.writeinsheet(self,defectdetails)
+
         for i in range(len(defectdetails)):
             #print(defectdetails[i])
             pass
         print('----------------------------------------------------------------------------------------------')
 
+        #For counting defects monthly based on priority
         for year in range(2015,2017,1):
             for month_val in range(1,13,1):
                 value_to_search = str((str(months[month_val-1]) + ' '+str(year)))
@@ -107,11 +110,35 @@ class excel:
 
         for i in range(len(monthly_defect)):
             pass
-            print(monthly_defect[i])
+            #print(monthly_defect[i])
         excel.writeinsheet(self,monthly_defect)
 
-        #For counting defects monthly based on priority
+        #For counting defects based on sprint
 
+        for i in range(len(defectdetails)):
+            for j in range(len(sprintdetails)):
+                if(sprintdetails[j][0] == defectdetails[i][2]):
+                    if (len(sprintdetails[j]) == 3):
+                        sprintdetails[j].append(0) # for total defect
+                        sprintdetails[j].append(0) # for p1 defect
+                        sprintdetails[j].append(0) # for p2 defect
+                        sprintdetails[j].append(0) # for p3 defect
+                    sprintdetails[j][3] +=1
+
+                    if defectdetails[i][1] ==1:
+                        sprintdetails[j][4] +=1
+
+                    elif defectdetails[i][1] ==2:
+                        sprintdetails[j][5] +=1
+
+                    elif defectdetails[i][1] ==3:
+                        sprintdetails[j][6] +=1
+
+                    else:
+                        pass
+
+
+        excel.writeinsheet(self,sprintdetails)
 
 
 
