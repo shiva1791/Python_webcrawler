@@ -4,10 +4,12 @@ import copy
 
 
 class excel:
+    wb = openpyxl.load_workbook('Defect.xlsx')
+    sheetnames = wb.get_sheet_names()  # to get sheet names in the excel
+
     def getSprintDetails(self):
-        wb = openpyxl.load_workbook('Defect.xlsx')
-        sheetnames = wb.get_sheet_names()  # to get sheet names in the excel
-        sheet = wb.get_sheet_by_name(sheetnames[1])
+
+        sheet = excel.wb.get_sheet_by_name(excel.sheetnames[1])
         last_row = sheet.max_row  # last row in the sheet
         sprintname = []
         sprintstartdate = []
@@ -23,9 +25,8 @@ class excel:
         return (sprintdetail)
 
     def getDefectDetails(self):
-        wb = openpyxl.load_workbook('Defect.xlsx')
-        sheetnames = wb.get_sheet_names()  # to get sheet names in the excel
-        sheet = wb.get_sheet_by_name(sheetnames[0])
+
+        sheet = excel.wb.get_sheet_by_name(excel.sheetnames[0])
         last_row = sheet.max_row
         #print(last_row)
         defect_date = []
@@ -43,9 +44,7 @@ class excel:
         sprintdetails = excel.getSprintDetails(self)
         defectdetails = excel.getDefectDetails(self)
 
-        wb = openpyxl.load_workbook('Defect.xlsx')
-        sheetnames = wb.get_sheet_names()  # to get sheet names in the excel
-        sheet = wb.get_sheet_by_name(sheetnames[0])
+        sheet = excel.wb.get_sheet_by_name(excel.sheetnames[0])
         last_row = sheet.max_row
         #print(last_row)
 
@@ -165,6 +164,17 @@ class excel:
 
         pass
 
+    def getDefectDetail_Dictionary(self):
+        sheet = excel.wb.get_sheet_by_name(excel.sheetnames[0])
+        _dict_defect_data = {}
+        last_row = sheet.max_row
+        print(last_row)
+
+        for rows in range(1,last_row+1,1):
+            defectdate = sheet.cell(row = rows,column=2).value
+
+        pass
+
     def writeinsheet(self, anylist):
         anylist = anylist
         wb = openpyxl.load_workbook('Defect.xlsx')
@@ -188,4 +198,5 @@ if __name__ == '__main__':
     # e.getSprintDetails()
     # e.getDefectDetails()
     #e.getDefectInSprint()
-    e.getDefectsPerDate()
+   #e.getDefectsPerDate()
+    e.getDefectDetail_Dictionary()
